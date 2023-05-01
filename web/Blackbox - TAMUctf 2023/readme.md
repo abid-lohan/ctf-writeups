@@ -16,7 +16,7 @@ First of all, by just taking a look at the site, we can see that it’s possible
 - [http://blackbox.tamuctf.com/?page=home](http://blackbox.tamuctf.com/?page=home)
 - [http://blackbox.tamuctf.com/?page=login](http://blackbox.tamuctf.com/?page=login)
 
-Just by looking at the URLs it’s possible to be a classic LFI, let’s save that thougth for later.
+By looking at the URLs, a classic LFI seems possible, let’s save this thought for later.
 
 Looking at some HTTP response, we can confirm that the server uses PHP:
 
@@ -28,7 +28,7 @@ Accessing the login page, we’ve got the following cookie set:
 auth_token=eyJ1c2VybmFtZSI6Imd1ZXN0IiwidXNlcl9rZXkiOiJkYWVjNzJiOTFmM2I0Yzc5IiwiYWRtaW4iOmZhbHNlfQ%3D%3D.6b2b186e8229347709a34e09c7c5b81f
 ```
 
-If you pay attetion to it, the value has 2 parts, the first one looks like a base64 (%3D is “=” URL encoded), and the second one looks like some kind of hash. Let’s confirm this two hypothesis:
+If you pay attention to it, the value has 2 parts, the first one looks like a base64 ("%3D" is “=” URL encoded), and the second one looks like some kind of hash. Let’s confirm this two hypothesis:
 
 ```bash
 echo eyJ1c2VybmFtZSI6Imd1ZXN0IiwidXNlcl9rZXkiOiJkYWVjNzJiOTFmM2I0Yzc5IiwiYWRtaW4iOmZhbHNlfQ== | base64 -d
@@ -52,7 +52,7 @@ Great! Enumeration done, let’s begin the exploration.
 
 ### Dumping git information and analysing it
 
-I used the [git-dumper](https://github.com/arthaud/git-dumper) to download all the information present in [http://blackbox.tamuctf.com/.git](http://blackbox.tamuctf.com/.git):
+I used [git-dumper](https://github.com/arthaud/git-dumper) to download all the information present in [http://blackbox.tamuctf.com/.git](http://blackbox.tamuctf.com/.git):
 
 ```bash
 git-dumper http://blackbox.tamuctf.com/.git .
@@ -64,7 +64,7 @@ We just have one commit, so there is no information overwritten between commits.
 
 ![Untitled](images/Untitled%202.png)
 
-Exploring the files, he find so many important information:
+Exploring the files, he find so much important information:
 
 - **config.php** is on .gitignore, so we can’t see the source of this specific file right now
 - There is an **admin.php** file that includes our desired flag
@@ -92,7 +92,7 @@ function try_auth(string $username, string $password) {
 }
 ```
 
-It’s possible to try bruteforcing into this account. Even though I didn’t think that it was intended to do this way, I keep the following commands running just in case, while I was searching for other hints.
+It’s possible to try bruteforcing into this account. Even though I think that it's not intended to solve using this method, I keep the following commands running just in case, while I was searching for other hints.
 
 ```bash
 hashcat -a 0 -m 1400 834503d694716c01c31a6248821764b07d5d36ff592f0c7c96874e021e907fe0 /usr/share/wordlists/rockyou.txt
@@ -103,7 +103,7 @@ Spoiler: I didn’t break the hash.
 
 Next thing to do is figure out how the cookie **auth_token** is made, so we can forge our own admin session :)
 
-### Forging the first part of admin auth_token
+### Forging the first part of admin's auth_token
 
 Alright, remember that the base64 object was:
 
@@ -120,7 +120,7 @@ eyJ1c2VybmFtZSI6ImFkbWluIiwidXNlcl9rZXkiOiIyNmNlYjY4NWY0NmU2ZDIyIiwiYWRtaW4iOnRy
 
 However, trying to set a new cookie with this base64 encoded, with the subsequential hash unmodified doesn’t do the job unfortunately.
 
-### Forgin the second part of admin auth_token
+### Forging the second part of admin's auth_token
 
 Reading again the util.php, this function tells us how to do it:
 
