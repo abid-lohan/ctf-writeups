@@ -2,9 +2,12 @@
 
 ## Challenge
 
+Author: Mr. Blade
+
 I took a survey to find our dev's least favorite type of web challenge. The results of my survey showed that blackbox web is by far the most frustrating type of web challenge. Let's see what your opinion of it is.
 
 NOTE: flag format for this challenge is tamuctf{...}
+
 [http://blackbox.tamuctf.com](http://blackbox.tamuctf.com/)
 
 ## Solution
